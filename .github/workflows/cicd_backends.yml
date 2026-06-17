@@ -1,17 +1,9 @@
 name: CI/CD Backends EKS
-
 on:
   push:
     branches: [ main ]
-    paths:
-      - 'back-Ventas_SpringBoot/**'
-      - 'back-Despachos_SpringBoot/**'
-
-env:
-  REGISTRY: 193318341091.dkr.ecr.us-east-1.amazonaws.com
-
 jobs:
-  build-and-deploy-backends:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,24 +14,18 @@ jobs:
           aws-region: us-east-1
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
       - uses: aws-actions/amazon-ecr-login@v2
-      
-      - name: Build & push
+      - name: Build & Push
         run: |
           TAG=${GITHUB_SHA::7}
-          cd back-Ventas_SpringBoot && docker build -t $REGISTRY/back-ventas:$TAG . && docker push $REGISTRY/back-ventas:$TAG
-          cd ../back-Despachos_SpringBoot && docker build -t $REGISTRY/back-despachos:$TAG . && docker push $REGISTRY/back-despachos:$TAG
-          echo "IMAGE_TAG=$TAG" >> $GITHUB_ENV
-
-      - name: Actualizar manifests
+          docker build -t 193318341091.dkr.ecr.us-east-1.amazonaws.com/back-ventas:$TAG ./back-Ventas_SpringBoot
+          docker push 193318341091.dkr.ecr.us-east-1.amazonaws.com/back-ventas:$TAG
+          docker build -t 193318341091.dkr.ecr.us-east-1.amazonaws.com/back-despachos:$TAG ./back-Despachos_SpringBoot
+          docker push 193318341091.dkr.ecr.us-east-1.amazonaws.com/back-despachos:$TAG
+          echo "TAG=$TAG" >> $GITHUB_ENV
+      - name: Configurar kubeconfig y Desplegar
         run: |
-          sed -i "s|\${IMAGE_TAG}|${{ env.IMAGE_TAG }}|g" k8s/back-ventas-deployment.yaml
-          sed -i "s|\${IMAGE_TAG}|${{ env.IMAGE_TAG }}|g" k8s/back-despachos-deployment.yaml
-
-      - name: Configurar kubeconfig
-        run: aws eks update-kubeconfig --region us-east-1 --name ECK_PRUEBA3
-
-      - name: Aplicar despliegues
-        run: |
-          kubectl apply -f k8s/
-          kubectl set image deployment/back-ventas -n innovatech-production back-ventas=$REGISTRY/back-ventas:${{ env.IMAGE_TAG }}
-          kubectl set image deployment/back-despachos -n innovatech-production back-despachos=$REGISTRY/back-despachos:${{ env.IMAGE_TAG }}
+          aws eks update-kubeconfig --region us-east-1 --name ECK_PRUEBA3
+          sed -i "s|\${IMAGE_TAG}|$TAG|g" k8s/back-ventas-deployment.yaml
+          sed -i "s|\${IMAGE_TAG}|$TAG|g" k8s/back-despachos-deployment.yaml
+          kubectl apply -f k8s/back-ventas-deployment.yaml
+          kubectl apply -f k8s/back-despachos-deployment.yaml
