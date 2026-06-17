@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 function Navbar() {
   return (
     <nav className="rounded-xl w-[250px] min-h-[880px] bg-teal-600 text-white sticky top-0 p-4 m-4">
@@ -7,28 +9,28 @@ function Navbar() {
       {/* Menú de navegación */}
       <ul className="space-y-3">
         <li>
-          <a
-            href="#"
-            className="block font-bold py-2 px-3 hover:bg-teal-700 rounded"
+          <Link
+            to="/usuarios"
+            className="block font-bold py-2 px-3 hover:bg-teal-700 rounded transition-colors"
           >
             Usuarios
-          </a>
+          </Link>
         </li>
         <li>
-          <a
-            href="#"
-            className="block font-bold py-2 px-3 hover:bg-teal-700 rounded"
+          <Link
+            to="/productos"
+            className="block font-bold py-2 px-3 hover:bg-teal-700 rounded transition-colors"
           >
             Productos
-          </a>
+          </Link>
         </li>
         <li>
-          <a
-            href="#"
-            className="block font-bold py-2 px-3 hover:bg-teal-700 rounded"
+          <Link
+            to="/configuracion"
+            className="block font-bold py-2 px-3 hover:bg-teal-700 rounded transition-colors"
           >
             Configuración
-          </a>
+          </Link>
         </li>
       </ul>
     </nav>
