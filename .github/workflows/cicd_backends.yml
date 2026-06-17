@@ -1,19 +1,24 @@
 name: CI/CD Backends EKS
+
 on:
   push:
     branches: [ main ]
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          
       - uses: aws-actions/amazon-ecr-login@v2
+      
       - name: Build & Push
         run: |
           TAG=${GITHUB_SHA::7}
@@ -22,10 +27,11 @@ jobs:
           docker build -t 193318341091.dkr.ecr.us-east-1.amazonaws.com/back-despachos:$TAG ./back-Despachos_SpringBoot
           docker push 193318341091.dkr.ecr.us-east-1.amazonaws.com/back-despachos:$TAG
           echo "TAG=$TAG" >> $GITHUB_ENV
+          
       - name: Configurar kubeconfig y Desplegar
         run: |
           aws eks update-kubeconfig --region us-east-1 --name ECK_PRUEBA3
           sed -i "s|\${IMAGE_TAG}|$TAG|g" k8s/back-ventas-deployment.yaml
-          sed -i "s|\${IMAGE_TAG}|$TAG|g" k8s/back-despachos-deployment.yaml
+          sed -i "s|\${IMAGE_TAG}|$TAG|g" k8s/back-despachos-deployment.yml
           kubectl apply -f k8s/back-ventas-deployment.yaml
-          kubectl apply -f k8s/back-despachos-deployment.yaml
+          kubectl apply -f k8s/back-despachos-deployment.yml
