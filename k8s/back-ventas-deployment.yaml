@@ -15,11 +15,10 @@ spec:
     spec:
       containers:
       - name: back-ventas
-        image: 193318341091.dkr.ecr.us-east-1.amazonaws.com/innovatech-back-ventas:latest 
+        image: placeholder-image
         ports:
         - containerPort: 8080
         resources:
           requests:
             cpu: "200m"
             memory: "256Mi"
-          
