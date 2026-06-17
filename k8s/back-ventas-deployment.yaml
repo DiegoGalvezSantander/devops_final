@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: back-ventas
+  namespace: innovatech-production
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: back-ventas
+  template:
+    metadata:
+      labels:
+        app: back-ventas
+    spec:
+      containers:
+      - name: back-ventas
+        image: 193318341091.dkr.ecr.us-east-1.amazonaws.com/back-ventas:latest 
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+          
