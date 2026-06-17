@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: back-ventas
-        image: 193318341091.dkr.ecr.us-east-1.amazonaws.com/back-ventas:latest 
+        image: 193318341091.dkr.ecr.us-east-1.amazonaws.com/innovatech-back-ventas:latest 
         ports:
         - containerPort: 8080
         resources:
