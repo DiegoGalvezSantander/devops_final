@@ -6,8 +6,6 @@ on:
     paths:
       - 'back-Ventas_SpringBoot/**'
       - 'back-Despachos_SpringBoot/**'
-      - 'k8s/back-ventas-*.yaml'
-      - 'k8s/back-despachos-*.yaml'
 
 env:
   ECR_REPO_BACKEND_1: back-ventas
@@ -17,49 +15,25 @@ jobs:
   build-and-deploy-backends:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v4
-
-      - name: Configurar credenciales AWS
-        uses: aws-actions/configure-aws-credentials@v4
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-
-      - name: Login a Amazon ECR
-        id: login-ecr
+      - id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Definir tag de imagen
-        run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
-
-      - name: Build & push Backend Ventas
+      - run: echo "IMAGE_TAG=${GITHUB_SHA::7}" >> $GITHUB_ENV
+      
+      - name: Build & push
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          cd back-Ventas_SpringBoot
-          docker build -t $ECR_REGISTRY/${ECR_REPO_BACKEND_1}:${IMAGE_TAG} .
-          docker push $ECR_REGISTRY/${ECR_REPO_BACKEND_1}:${IMAGE_TAG}
-
-      - name: Build & push Backend Despachos
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        run: |
-          cd back-Despachos_SpringBoot
-          docker build -t $ECR_REGISTRY/${ECR_REPO_BACKEND_2}:${IMAGE_TAG} .
-          docker push $ECR_REGISTRY/${ECR_REPO_BACKEND_2}:${IMAGE_TAG}
-
-      - name: Configurar kubeconfig
-        run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
-
-      - name: Aplicar manifests y actualizar imágenes
-        env:
-          NS: innovatech-production
           REG: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          kubectl apply -f k8s/namespace.yaml
-          kubectl apply -f k8s/
-          kubectl set image deployment/back-ventas -n $NS back-ventas=$REG/${{ env.ECR_REPO_BACKEND_1 }}:${IMAGE_TAG}
-          kubectl set image deployment/back-despachos -n $NS back-despachos=$REG/${{ env.ECR_REPO_BACKEND_2 }}:${IMAGE_TAG}
+          cd back-Ventas_SpringBoot && docker build -t $REG/${{ env.ECR_REPO_BACKEND_1 }}:${{ env.IMAGE_TAG }} . && docker push $REG/${{ env.ECR_REPO_BACKEND_1 }}:${{ env.IMAGE_TAG }}
+          cd ../back-Despachos_SpringBoot && docker build -t $REG/${{ env.ECR_REPO_BACKEND_2 }}:${{ env.IMAGE_TAG }} . && docker push $REG/${{ env.ECR_REPO_BACKEND_2 }}:${{ env.IMAGE_TAG }}
+
+      - run: aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME }}
+      - run: |
+          kubectl set image deployment/back-ventas -n innovatech-production back-ventas=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO_BACKEND_1 }}:${{ env.IMAGE_TAG }}
+          kubectl set image deployment/back-despachos -n innovatech-production back-despachos=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO_BACKEND_2 }}:${{ env.IMAGE_TAG }}
