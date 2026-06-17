@@ -7,7 +7,7 @@ on:
       - 'front_despacho/**'
 
 env:
-  ECR_REPO_FRONTEND: pruebafrontend
+  ECR_REPO_FRONTEND: front-despacho
 
 jobs:
   build-and-deploy-frontend:

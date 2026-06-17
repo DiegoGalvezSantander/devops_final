@@ -44,5 +44,3 @@ jobs:
       - name: Aplicar y actualizar despliegues
         run: |
           kubectl apply -f k8s/
-          kubectl set image deployment/back-ventas -n innovatech-production back-ventas=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO_BACKEND_1 }}:${{ env.IMAGE_TAG }}
-          kubectl set image deployment/back-despachos -n innovatech-production back-despachos=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPO_BACKEND_2 }}:${{ env.IMAGE_TAG }}
