@@ -10,8 +10,8 @@ export const TableDespachos = () => {
     await axios
       .get("http://192.168.3.20/api/v1/despachos", {
         headers:{
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
         }
       })
       .then((response) => {
@@ -19,6 +19,7 @@ export const TableDespachos = () => {
         setDespachos(response.data);
       });
   };
+
   // Llamada a la función para obtener los datos cuando el componente se monta
   useEffect(() => {
     despacho();
@@ -34,62 +35,60 @@ export const TableDespachos = () => {
 
   return (
     <>
-      <section className="grid text-center grid-cols-12 mb-8">
-        <div className="col-span-12 flex justify-center">
-          <div className="col-span-10 p-2 bg-white border border-gray-200 rounded-lg shadow dark:bg-white h-full overflow-hidden">
-            <table className="table-fixed">
-              <thead>
-                <tr className="py-10">
-                  <th className="pr-10">Orden de despacho</th>
-                  <th className="pr-10">Orden de compra</th>
-                  <th className="pr-10">Dirección de entrega</th>
-                  <th className="pr-10">Fecha despacho</th>
-                  <th className="pr-10">Patente Camión</th>
-                  <th className="pr-10">Entregado</th>
-                  <th className="pr-10">Intentos de entrega</th>
+      <section className="flex justify-center mb-8 w-full">
+        {/* Contenedor unificado con sombra y bordes redondeados */}
+        <div className="tabla-contenedor overflow-x-auto">
+          <table className="w-full text-center border-collapse">
+            <thead>
+              {/* Encabezado con tipografía corregida y estilo limpio */}
+              <tr className="bg-gray-50 border-b-2 border-gray-200">
+                <th className="p-4 font-bold text-gray-700 uppercase text-sm">Orden Despacho</th>
+                <th className="p-4 font-bold text-gray-700 uppercase text-sm">Orden Compra</th>
+                <th className="p-4 font-bold text-gray-700 uppercase text-sm">Dirección de Entrega</th>
+                <th className="p-4 font-bold text-gray-700 uppercase text-sm">Fecha Despacho</th>
+                <th className="p-4 font-bold text-gray-700 uppercase text-sm">Patente Camión</th>
+                <th className="p-4 font-bold text-gray-700 uppercase text-sm">Estado</th>
+                <th className="p-4 font-bold text-gray-700 uppercase text-sm">Intentos</th>
+                <th className="p-4 font-bold text-gray-700 uppercase text-sm">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {despachos.map((despacho) => (
+                <tr key={despacho.idDespacho} className="border-b hover:bg-gray-50 transition-colors duration-200">
+                  <td className="p-4 text-gray-800 font-medium">{despacho.idDespacho}</td>
+                  <td className="p-4 text-gray-600">{despacho.idCompra}</td>
+                  <td className="p-4 text-gray-600">{despacho.direccionCompra}</td>
+                  <td className="p-4 text-gray-600">{despacho.fechaDespacho}</td>
+                  <td className="p-4 text-gray-700 font-mono text-sm">{despacho.patenteCamion}</td>
+                  
+                  {/* Badge dinámico para reflejar el estado del despacho */}
+                  <td className="p-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                      despacho.entregado 
+                        ? "bg-green-100 text-green-800" 
+                        : "bg-amber-100 text-amber-800"
+                    }`}>
+                      {despacho.entregado ? "Entregado" : "Pendiente"}
+                    </span>
+                  </td>
+                  
+                  <td className="p-4 text-gray-600">{despacho.intento}</td>
+                  <td className="p-4">
+                    {/* Botón adaptado al esquema de color profesional */}
+                    <button
+                      onClick={() => handleAbrirModal(despacho)}
+                      className="py-2 px-6 bg-[#00a680] text-white font-medium rounded-lg shadow hover:bg-[#008f6d] transition-all duration-300"
+                    >
+                      Cerrar despacho
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {despachos
-               
-                .map((despacho) => (
-                  <tr key={despacho.idDespacho}>
-                    <td className="pr-10 py-10 items-center">{despacho.idDespacho}</td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.idCompra}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.direccionCompra}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.fechaDespacho}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.patenteCamion}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.entregado
-                        ? "Despacho entregado"
-                        : "Despacho pendiente"}
-                    </td>
-                    <td className="pr-10 py-10  items-center">
-                      {despacho.intento}
-                    </td>
-                    <td>
-                      <button
-                        onClick={() => handleAbrirModal(despacho)}
-                        className="py-1 bg-orange-200 px-8 rounded-xl shadow-md hover:bg-orange-300/70 transition-all duration-300 "
-                      >
-                        Cerrar despacho
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       </section>
+
       <Modal
         onClose={() => {
           setOpenModal(false);
@@ -100,8 +99,8 @@ export const TableDespachos = () => {
           <FormCierreDespacho
             despacho={despachoSeleccionado}
             onClose={() => {
-              //onclose es un prop que pasa funciones al modal con el form abierto, por ende al cerrarse, se ejecutan esas 2 funciones
-              setOpenModal(false), despacho();
+              setOpenModal(false);
+              despacho();
             }}
           />
         )}

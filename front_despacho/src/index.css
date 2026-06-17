@@ -1,7 +1,62 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* --- MEJORAS DASHBOARD --- */
 
-body {
-    background-color: #EEEEEE;
+/* 1. Tabla de datos */
+.tabla-contenedor {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  margin: 20px auto;
+  width: 90%;
+}
+
+.tabla-encabezado {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  padding: 15px 10px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* 2. Menú Lateral (Sidebar) */
+.sidebar-opcion {
+  padding: 15px 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.sidebar-opcion:hover, 
+.sidebar-opcion.activa {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-left: 5px solid #ffffff;
+}
+
+/* 3. Tarjetas superiores */
+.tarjeta-consulta {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 20px;
+}
+.tarjeta-consulta button {
+  margin-top: auto; 
+}
+
+/* 4. Pie de página (Footer) */
+.footer-contenedor {
+  background-color: #00a680;
+  padding: 30px 20px;
+  color: white;
+}
+.footer-columnas {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
 }
