@@ -31,7 +31,7 @@ jobs:
       - name: Configurar kubeconfig y Desplegar
         run: |
           aws eks update-kubeconfig --region us-east-1 --name ECK_PRUEBA3
+          kubectl create namespace innovatech-production || true
           sed -i "s|\${IMAGE_TAG}|$TAG|g" k8s/back-ventas-deployment.yaml
           sed -i "s|\${IMAGE_TAG}|$TAG|g" k8s/back-despachos-deployment.yml
-          kubectl apply -f k8s/back-ventas-deployment.yaml
-          kubectl apply -f k8s/back-despachos-deployment.yml
+          kubectl apply -f k8s/
